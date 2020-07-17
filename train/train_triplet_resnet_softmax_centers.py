@@ -181,24 +181,7 @@ def train(args):
             if norm != 0:
                 exemplars[i] = exemplars[i]/norm
 
-        print("In torch: ",exemplars[0])
-
-
-
-            #print(labels_anchor)
-
-           # labels = torch.cat((labels_anchor, labels_anchor, labels_anchor, labels_pos, labels_neg), 0)
-
-            #optimizer.zero_grad()
-            #embed_anch, embed_pos, embed_neg, embed_pos_nby, embed_neg_nby, predictions  = model(images, images_pos, images_neg, imgs_pos_nby, imgs_neg_nby)
-
-            #loss, triplet_loss, loss_softmax, loss_nby = loss_fn(embed_anch, embed_pos, embed_neg, embed_pos_nby, embed_neg_nby, predictions, labels)
-
-            #loss.backward()
-            #optimizer.step()
-            #global_step += 1
-
-
+        print("In torch: ", exemplars[0])
 
 
 
