@@ -2,6 +2,10 @@
   "household":
   {
     "data_path": "/home/mikelf/datasets/insitu-household"
+  },
+  "core50":
+  {
+    "data_path": "/home/mikelf/datasets/core50"
   }
 }
 
