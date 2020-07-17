@@ -102,7 +102,7 @@ if __name__ == '__main__':
                         help='Height of the input image')
     parser.add_argument('--img_cols', nargs='?', type=int, default=224, 
                         help='Height of the input image')
-    parser.add_argument('--batch_size', nargs='?', type=int, default=5, #7 
+    parser.add_argument('--batch_size', nargs='?', type=int, default=24, #7 
                         help='Batch Size')
     parser.add_argument('--embedding_size', nargs='?', type=int, default=128, #7 
                         help='Size of the dense layer for inference')
