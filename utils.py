@@ -145,12 +145,12 @@ def eval_model_real(step, sets):
 
         #print(args_local.embedding_size)
 
-        subprocess.call(["python test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=test --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
-        subprocess.call(["python test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=train --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
+        subprocess.call(["python3 test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=test --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
+        subprocess.call(["python3 test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=train --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
         
 
       
-        subprocess.call(["python test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size )], shell=True)
+        subprocess.call(["python3 test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size )], shell=True)
 
 
     return 0
@@ -172,18 +172,18 @@ def eval_model(step, sets):
 
         #print(args_local.embedding_size)
 
-        subprocess.call(["python test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=test --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
-        subprocess.call(["python test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=train --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
+        subprocess.call(["python3 test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=test --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
+        subprocess.call(["python3 test/test_embeddings.py --ckpt_path={} --dataset={} --instances={} --split=train --embedding_size={}".format(ckpt_full_path,  args_local.dataset, set_to_test, args_local.embedding_size)], shell=True)
         
         #print (ckpt_full_path)
         if set_to_test == "full":
-            accuracy_all = subprocess.check_output(["python test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size)], shell=True)
+            accuracy_all = subprocess.check_output(["python3 test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size)], shell=True)
             accuracy_all = float(accuracy_all.decode('utf-8'))
             accuracies_all.append(accuracy_all)
             print ("Accuracy full: {:.3f} | step: {} ".format(accuracy_all, step))
 
         elif set_to_test == "known": 
-            accuracy_known = subprocess.check_output(["python test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size )], shell=True)
+            accuracy_known = subprocess.check_output(["python3 test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size )], shell=True)
             accuracy_known = float(accuracy_known.decode('utf-8'))
             accuracies_known.append(accuracy_known)
             #accuracy_all = accuracy_known
@@ -191,7 +191,7 @@ def eval_model(step, sets):
             print ("Accuracy known: {:.3f} | step: {} ".format(accuracy_known, step)) 
              
         elif set_to_test == "novel":
-            accuracy_novel = subprocess.check_output(["python test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size )], shell=True)
+            accuracy_novel = subprocess.check_output(["python3 test/nearest_neighbours_exemplars.py --ckpt_path={} --instances={} --num_classes={} --embedding_size={}".format(ckpt_full_path, set_to_test, num_class, args_local.embedding_size )], shell=True)
             accuracy_novel = float(accuracy_novel.decode('utf-8'))
             accuracies_novel.append(accuracy_novel) 
             print ("Accuracy novel: {:.3f} | step: {} ".format(accuracy_novel, step))
