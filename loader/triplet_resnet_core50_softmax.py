@@ -12,8 +12,9 @@ from collections import OrderedDict
 import os
 import numpy as np
 import glob
-from utils import *
 import random
+import argparse
+
 
 
 train_scenes = [1]
@@ -230,7 +231,7 @@ class triplet_resnet_core50_softmax(data.Dataset):
         img = img[:, :, ::-1]
         img = img.astype(np.float64)
         img -= self.mean
-        img = m.imresize(img, (self.img_size[0], self.img_size[1]))
+      
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
         img = img.astype(float) / 255.0
@@ -241,7 +242,7 @@ class triplet_resnet_core50_softmax(data.Dataset):
         img_pos = img_pos[:, :, ::-1]
         img_pos = img_pos.astype(np.float64)
         img_pos -= self.mean
-        img_pos = m.imresize(img_pos, (self.img_size[0], self.img_size[1]))
+       
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
         img_pos = img_pos.astype(float) / 255.0
@@ -253,7 +254,6 @@ class triplet_resnet_core50_softmax(data.Dataset):
         img_neg = img_neg[:, :, ::-1]
         img_neg = img_neg.astype(np.float64)
         img_neg -= self.mean
-        img_neg = m.imresize(img_neg, (self.img_size[0], self.img_size[1]))
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
         img_neg = img_neg.astype(float) / 255.0
@@ -288,39 +288,62 @@ if __name__ == '__main__':
     import torchvision
     import matplotlib.pyplot as plt
 
-    local_path = '/media/mikelf/media_rob/core50_v3'
-    dst = triplet_ae_core50_softmax(local_path, split="train", is_transform=True, augmentations=None)
+    sys.path.append('utils')
+    sys.path.append('.')
+    sys.path.append('..')
+
+    from utils import get_instances
+
+
+    local_path = '/home/mikelf/datasets/core50'
+  
     bs = 2
-    trainloader = data.DataLoader(dst, batch_size=bs, num_workers=0, shuffle=True)
+
+    parser = argparse.ArgumentParser(description='Hyperparams')
+
+    parser.add_argument('--dataset', nargs='?', type=str, default='core50',
+                        help='Dataset to use [\'tless, core50, toybox etc\']')
+    parser.add_argument('--img_rows', nargs='?', type=int, default=224, 
+                        help='Height of the input image')
+    parser.add_argument('--img_cols', nargs='?', type=int, default=224, 
+                        help='Height of the input image')
+    parser.add_argument('--instances', nargs='?', type=str, default='known',
+                        help='Train Dataset split to use [\'full, known, novel\']')
+
+    args = parser.parse_args()
+
+    # All, novel or known splits 
+    instances = get_instances(args)
+
+    
+    t_loader = triplet_resnet_core50_softmax(local_path, is_transform=True, 
+        split='train',
+        img_size=(args.img_rows, args.img_cols), 
+        augmentations=None, 
+        instances=instances)
+
+    trainloader = data.DataLoader(t_loader, batch_size=bs, num_workers=6, shuffle=True)
+
     for i, data in enumerate(trainloader):
-        imgs, imgs_nby, imgs_pos, imgs_pos_nby, imgs_neg, imgs_neg_nby, filenames, lbl, lbl, lbl_pos, lbl_pos, lbl_neg, lbl_neg = data
+        imgs, imgs_pos, imgs_neg, filenames, lbl, lbl_pos, lbl_neg = data
+
+        ##print(imgs.shape)
         
         imgs = imgs.numpy()[:, ::-1, :, :]
         imgs = np.transpose(imgs, [0,2,3,1])
 
-        imgs_nby = imgs_nby.numpy()[:, ::-1, :, :]
-        imgs_nby = np.transpose(imgs_nby, [0, 2, 3, 1])
-
         imgs_pos = imgs_pos.numpy()[:, ::-1, :, :]
         imgs_pos = np.transpose(imgs_pos, [0,2,3,1])
-
-        imgs_pos_nby = imgs_pos_nby.numpy()[:, ::-1, :, :]
-        imgs_pos_nby = np.transpose(imgs_pos_nby, [0, 2, 3, 1])
 
         imgs_neg = imgs_neg.numpy()[:, ::-1, :, :]
         imgs_neg = np.transpose(imgs_neg, [0,2,3,1])
 
-        imgs_neg_nby = imgs_neg_nby.numpy()[:, ::-1, :, :]
-        imgs_neg_nby = np.transpose(imgs_neg_nby, [0, 2, 3, 1])
 
-        f, axarr = plt.subplots(bs,6)
+        f, axarr = plt.subplots(bs,3)
         for j in range(bs):      
             axarr[j][0].imshow(imgs[j])
-            axarr[j][1].imshow(imgs_nby[j])
-            axarr[j][2].imshow(imgs_pos[j])
-            axarr[j][3].imshow(imgs_pos_nby[j])
-            axarr[j][4].imshow(imgs_neg[j])
-            axarr[j][5].imshow(imgs_neg_nby[j])
+            axarr[j][1].imshow(imgs_pos[j])
+            axarr[j][2].imshow(imgs_neg[j])
 
             print(lbl[j], lbl[j], lbl_pos[j], lbl_pos[j], lbl_neg[j], lbl_neg[j])
             
