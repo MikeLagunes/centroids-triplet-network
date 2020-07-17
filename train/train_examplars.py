@@ -254,7 +254,7 @@ if __name__ == '__main__':
                         help='Test Dataset split to use [\'full, known, novel, all\']')
     parser.add_argument('--n_epoch', nargs='?', type=int, default=500, 
                         help='# of the epochs')
-    parser.add_argument('--batch_size', nargs='?', type=int, default=15,
+    parser.add_argument('--batch_size', nargs='?', type=int, default=30,
                         help='Batch Size')
     parser.add_argument('--l_rate', nargs='?', type=float, default=1e-3,
                         help='Learning Rate')
