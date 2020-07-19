@@ -160,7 +160,6 @@ class ExemplarSoftmaxLoss(nn.Module):
      
         labels = torch.cat((labels_anchor, labels_anchor, labels_neg), 0)
         loss_softmax = self.loss_fn(input=self.margin*outputs, target=labels)
-        #loss_softmax = self.loss_fn(input=self.margin*outputs, target=labels)
         
         batch_size = anchor.size(0)
 
@@ -194,9 +193,9 @@ class ExemplarSoftmaxLoss(nn.Module):
                # print("Cond 1 not met")
                 loss_center += distance_comp1
 
-            # if F.relu(distance_neg_2 - distance_ref_2) > 0:
-            #     #print("Cond 2 not met")
-            #     loss_center += distance_comp2
+            if F.relu(distance_neg_2 - distance_ref_2) > 0:
+                #print("Cond 2 not met")
+                loss_center += distance_comp2
 
             if F.relu(triplet_positive - triplet_negative) > 0:
                 #print("Cond 2 not distance_triplet")

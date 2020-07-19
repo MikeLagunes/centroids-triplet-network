@@ -155,22 +155,24 @@ def train(args):
 
             for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
-                images = Variable(images.cuda())
+                if i % 10 == 0:
 
-                embed_anch, _, _, _  = model(images, images, images)
-                
+                    images = Variable(images.cuda())
 
-                embed_anch =  embed_anch.detach().cpu()
+                    embed_anch, _, _, _  = model(images, images, images)
+                    
 
-                #print(exemplars_torch[labels_anchor.item()].size(), embed_anch.size())
+                    embed_anch =  embed_anch.detach().cpu()
 
-                sum_curr = exemplars_torch[labels_anchor.item()] + embed_anch[0]
+                    #print(exemplars_torch[labels_anchor.item()].size(), embed_anch.size())
 
-                #print(exemplars_torch[labels_anchor.item()][0:10])
+                    sum_curr = exemplars_torch[labels_anchor.item()] + embed_anch[0]
 
-                exemplars_torch[labels_anchor.item()] = sum_curr  #embed_anch #exemplars_torch[labels_anchor.item()]
-                #exemplars_counter_torch[labels_anchor.item()] += 1
-                exemplars_labels_torch[labels_anchor.item()] = labels_anchor.item()
+                    #print(exemplars_torch[labels_anchor.item()][0:10])
+
+                    exemplars_torch[labels_anchor.item()] = sum_curr  #embed_anch #exemplars_torch[labels_anchor.item()]
+                    #exemplars_counter_torch[labels_anchor.item()] += 1
+                    exemplars_labels_torch[labels_anchor.item()] = labels_anchor.item()
 
             #print("Not normal", exemplars_torch[0][0:10])
 
