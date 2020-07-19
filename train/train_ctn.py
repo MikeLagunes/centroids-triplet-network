@@ -92,6 +92,8 @@ def train(args):
 
     optimizer = optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.9, weight_decay=args.wd)#, weight_decay=1e-5
 
+    loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
+
     show_setup(args,n_classes, optimizer, loss_ctn)
 
     # Training from Checkpoint
