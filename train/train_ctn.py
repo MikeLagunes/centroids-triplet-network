@@ -58,7 +58,7 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
     print("OK centers")
 
-    return centroids
+    return exemplars_torch
 
 
 
