@@ -179,14 +179,15 @@ class ExemplarSoftmaxLoss(nn.Module):
             distance_ref_1 = self.l2(anchor[i].view(1,-1), exemplars[labels_anchor[i].item()].view(1,-1))
             distance_neg_1 = self.l2(negative[i].view(1,-1), exemplars[labels_anchor[i].item()].view(1,-1))
 
-            # distance_ref_2 = self.l2(anchor[i].view(1,-1), exemplars[labels_neg[i].item()].view(1,-1))
-            # distance_neg_2 = self.l2(negative[i].view(1,-1), exemplars[labels_neg[i].item()].view(1,-1))
+            distance_ref_2 = self.l2(anchor[i].view(1,-1), exemplars[labels_neg[i].item()].view(1,-1))
+            distance_neg_2 = self.l2(negative[i].view(1,-1), exemplars[labels_neg[i].item()].view(1,-1))
 
             triplet_positive = self.l2(anchor[i].view(1,-1), positive[i].view(1,-1))
             triplet_negative = self.l2(anchor[i].view(1,-1), negative[i].view(1,-1))
 
             distance_comp1 = F.relu(distance_ref_1 - distance_neg_1 + self.margin2)
-           # distance_comp2 = F.relu(distance_neg_2 - distance_ref_2)
+            distance_comp2 = F.relu(distance_neg_2 - distance_ref_2)
+            
             distance_triplet = F.relu(triplet_positive - triplet_negative)
 
             if F.relu(distance_ref_1 - distance_neg_1) > 0:

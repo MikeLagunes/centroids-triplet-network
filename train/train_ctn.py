@@ -121,7 +121,6 @@ def train(args):
             for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
                 images = Variable(images.cuda())
-
                 images_pos = Variable(images_pos.cuda())
                 images_neg = Variable(images_neg.cuda())
 
@@ -172,60 +171,8 @@ def train(args):
 
         if epoch % 2  == 0: #epoch % 4
 
-            # print("Updating centers")
-
-            # #model.eval()
-            # trainloader = data.DataLoader(t_loader, batch_size=1, num_workers=6, shuffle=False)
-
-            # exemplars = np.zeros((n_classes,args.embedding_size))
-            # exemplars_labels = np.zeros((n_classes,1))
-            # exemplars_counter = np.zeros((n_classes,1))
-            # #exemplars_counter = np.zeros((50,1))
-            # exemplars = np.asarray(exemplars)
-
-            # exemplars_labels_torch = torch.zeros(n_classes,1)
-            # exemplars_counter_torch = torch.zeros(n_classes,1)
-
-            # exemplars_torch = exemplars_torch.cpu()
-            # exemplars_labels_torch = exemplars_labels_torch.cpu() 
-            # exemplars_counter_torch = exemplars_counter_torch.cpu()
-
-            # model.train()
-
-
-            # for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
-
-            #     if i % 50 == 0:
-
-            #         images = Variable(images.cuda())
-
-            #         embed_anch, _, _, _  = model(images, images, images)
-                    
-
-            #         embed_anch =  embed_anch.detach().cpu()
-
-            #         #print(exemplars_torch[labels_anchor.item()].size(), embed_anch.size())
-
-            #         sum_curr = exemplars_torch[labels_anchor.item()] + embed_anch[0]
-
-            #         #print(exemplars_torch[labels_anchor.item()][0:10])
-
-            #         exemplars_torch[labels_anchor.item()] = sum_curr  #embed_anch #exemplars_torch[labels_anchor.item()]
-            #         #exemplars_counter_torch[labels_anchor.item()] += 1
-            #         exemplars_labels_torch[labels_anchor.item()] = labels_anchor.item()
-
-            # #print("Not normal", exemplars_torch[0][0:10])
-
-            # for i in range(n_classes):
-            #     #norm = exemplars_torch[i].norm(keepdim=True)
-            #     norm = torch.norm(exemplars_torch[i])
-            #     if norm.sum != 0:
-            #         exemplars_torch[i] = torch.div(exemplars_torch[i],norm)
-            #     #     exemplars_torch[i] = exemplars_torch[i].div(norm)
-
-
-            # print("OK centers")
-
+            exemplars_torch = get_centroids(model, exemplars_torch, t_loader, n_classes)
+            
         ####################################################################################
 
         loss_fn = ExemplarSoftmaxLoss(lambda_factor=args.lambda_factor, margin=args.margin, margin2=args.margin2)
@@ -236,7 +183,6 @@ def train(args):
         for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
             images = Variable(images.cuda())
-
             images_pos = Variable(images_pos.cuda())
             images_neg = Variable(images_neg.cuda())
 
