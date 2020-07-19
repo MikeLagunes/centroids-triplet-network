@@ -275,3 +275,75 @@ class PureExemplarSoftmaxLoss(nn.Module):
 
 
         return loss_total, loss_softmax, loss_center #
+
+
+
+
+
+class CentroidsTripletLoss(nn.Module):
+    """
+    Triplet loss
+    Takes embeddings of an anchor sample, a positive sample, a negative sample, logits and class labels
+    """
+
+    def __init__(self, alpha_factor=0.0, beta_factor=0.0):
+        super(ExemplarSoftmaxLoss, self).__init__()
+
+        self.loss_fn = nn.CrossEntropyLoss()
+        self.alpha_factor = alpha_factor
+        self.beta_factor = beta_factor
+        self.l2 = nn.PairwiseDistance(p=2)
+                    
+    def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars ):
+        
+        exemplars = exemplars.cuda()
+     
+        labels = torch.cat((labels_anchor, labels_anchor, labels_neg), 0)
+        loss_softmax = self.loss_fn(input=outputs, target=labels)
+        
+        batch_size = anchor.size(0)
+
+        triplet_positive = 0
+        triplet_negative = 0
+
+        distance_ref_1 = 0
+        distance_neg_1 = 0
+        distance_ref_2 = 0
+        distance_neg_2 = 0
+
+        loss_center =  torch.zeros(1).cuda()
+        loss_triplet =  torch.zeros(1).cuda()
+   
+        for i in range(batch_size):
+
+            distance_ref_1 = self.l2(anchor[i].view(1,-1), exemplars[labels_anchor[i].item()].view(1,-1))
+            distance_neg_1 = self.l2(negative[i].view(1,-1), exemplars[labels_anchor[i].item()].view(1,-1))
+
+            distance_ref_2 = self.l2(anchor[i].view(1,-1), exemplars[labels_neg[i].item()].view(1,-1))
+            distance_neg_2 = self.l2(negative[i].view(1,-1), exemplars[labels_neg[i].item()].view(1,-1))
+
+            triplet_positive = self.l2(anchor[i].view(1,-1), positive[i].view(1,-1))
+            triplet_negative = self.l2(anchor[i].view(1,-1), negative[i].view(1,-1))
+
+            distance_comp1 = F.relu(distance_ref_1 - distance_neg_1 + self.margin2)
+            distance_comp2 = F.relu(distance_neg_2 - distance_ref_2)
+            
+            distance_triplet = F.relu(triplet_positive - triplet_negative)
+
+            if F.relu(distance_ref_1 - distance_neg_1) > 0:
+               # print("Cond 1 not met")
+                loss_center += distance_comp1
+
+            if F.relu(distance_neg_2 - distance_ref_2) > 0:
+                #print("Cond 2 not met")
+                loss_center += distance_comp2
+
+            if F.relu(triplet_positive - triplet_negative) > 0:
+                #print("Cond 2 not distance_triplet")
+                loss_triplet += distance_triplet
+
+ 
+
+        loss_total =  loss_softmax + self.alpha_factor*loss_center + self.beta_factor*loss_triplet##.sum() +
+
+        return loss_total, loss_triplet, loss_softmax, loss_center #

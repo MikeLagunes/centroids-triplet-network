@@ -88,10 +88,11 @@ def train(args):
     # Setup Model
     model = triplet_resnet50_softmax(pretrained=True,  num_classes=n_classes, embedding_size=args.embedding_size)
     model.cuda()
+    model.train()
 
     optimizer = optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.9, weight_decay=args.wd)#, weight_decay=1e-5
 
-    loss_fn = TripletSoftmaxLoss(lambda_factor=args.lambda_factor, margin=args.margin)
+    loss_ctn = ExemplarSoftmaxLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
 
     show_setup(args,n_classes, optimizer, loss_fn)
 
@@ -115,9 +116,18 @@ def train(args):
 
     for epoch in range(args.n_epoch):
 
+        # Get centroids:
+
+        if epoch % 2  == 0: #epoch % 4
+
+            exemplars_torch = get_centroids(model, exemplars_torch, t_loader, n_classes)
+            
+        # warmup
+
         if epoch == 0:
 
-            model.train()
+            loss_ctn = ExemplarSoftmaxLoss(alpha_factor=0, beta_factor=0)
+            
             for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
                 images = Variable(images.cuda())
@@ -140,17 +150,15 @@ def train(args):
                 optimizer.zero_grad()
                 embed_anch, embed_pos, embed_neg, predictions  = model(images, images_pos, images_neg)
 
-                loss, triplet_loss, loss_softmax = loss_fn(embed_anch, embed_pos, embed_neg, predictions, labels)
+                loss, triplet_loss, loss_softmax, loss_nby = loss_ctn(embed_anch, embed_pos, embed_neg, predictions, labels_anchor, labels_neg, exemplars_torch)
 
                 loss.backward()
                 optimizer.step()
                 global_step += 1
-
+            
                 if global_step % args.logs_freq == 0:
 
-                    log_loss(epoch, global_step, loss_sum=loss.item(), loss_triplet=triplet_loss.item(), loss_softmax=loss_softmax.item(), loss_nby=20 ) 
-
-     
+                    log_loss(epoch, global_step, loss_sum=loss.item(), loss_triplet=triplet_loss.item(), loss_softmax=loss_softmax.item(), loss_nby=loss_nby.item()) 
             
         save_checkpoint(epoch, model, optimizer, "temp")
 
@@ -166,54 +174,7 @@ def train(args):
                 save_checkpoint(epoch, model, optimizer, "best")
                 accuracy_best = accuracy_curr
 
-        #-------------------------------- Evaluate
-        # Get centers:
-
-        if epoch % 2  == 0: #epoch % 4
-
-            exemplars_torch = get_centroids(model, exemplars_torch, t_loader, n_classes)
-            
-        ####################################################################################
-
-        loss_fn = ExemplarSoftmaxLoss(lambda_factor=args.lambda_factor, margin=args.margin, margin2=args.margin2)
-        trainloader = data.DataLoader(t_loader, batch_size=args.batch_size, num_workers=6, shuffle=True)
-
-        #for itera in range(3):
-
-        for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
-
-            images = Variable(images.cuda())
-            images_pos = Variable(images_pos.cuda())
-            images_neg = Variable(images_neg.cuda())
-
-            labels_anchor = labels_anchor.view(len(labels_anchor))
-            labels_anchor = Variable(labels_anchor.cuda())
-
-            labels_pos = labels_pos.view(len(labels_pos))
-            labels_pos = Variable(labels_pos.cuda())
-
-            labels_neg = labels_neg.view(len(labels_neg))
-            labels_neg = Variable(labels_neg.cuda())
-
-
-            optimizer.zero_grad()
-            embed_anch, embed_pos, embed_neg, predictions  = model(images, images_pos, images_neg)
-
-            #exemplars_torch
-
-            loss, triplet_loss, loss_softmax, loss_nby = loss_fn(embed_anch, embed_pos, embed_neg, predictions, labels_anchor, labels_neg, exemplars_torch)
-
-            loss.backward()
-            optimizer.step()
-            global_step += 1
-
-
-            if global_step % args.logs_freq == 0:
-
-                log_loss(epoch, global_step, loss_sum=loss.item(), loss_triplet=triplet_loss.item(), loss_softmax=loss_softmax.item(), loss_nby=loss_nby.item() ) 
-        
-
-
+       
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
@@ -241,8 +202,10 @@ if __name__ == '__main__':
                         help='Learning Rate')
     parser.add_argument('--ckpt_path', nargs='?', type=str, default='.',
                     help='Path to save checkpoints')
-    parser.add_argument('--lambda_factor', nargs='?', type=float, default=1e-3,
-                    help='lambda_factor')
+    parser.add_argument('--alpha_factor', nargs='?', type=float, default=1e-3,
+                    help='alpha_factor')
+    parser.add_argument('--beta_factor', nargs='?', type=float, default=1e-3,
+                    help='beta_factor')
     parser.add_argument('--wd', nargs='?', type=float, default=1e-5,
                     help='l2 regularization')
     parser.add_argument('--eval_freq', nargs='?', type=int, default=2,
