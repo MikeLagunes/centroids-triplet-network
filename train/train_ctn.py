@@ -94,7 +94,7 @@ def train(args):
 
     loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
 
-    show_setup(args,n_classes, optimizer, loss_fn)
+    show_setup(args,n_classes, optimizer, loss_ctn)
 
     # Training from Checkpoint
         
