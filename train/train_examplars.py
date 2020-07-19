@@ -272,7 +272,7 @@ if __name__ == '__main__':
                     help='l2 regularization')
     parser.add_argument('--closeness', nargs='?', type=int, default=1,
                     help='neighboring frames')
-    parser.add_argument('--eval_freq', nargs='?', type=int, default=4,
+    parser.add_argument('--eval_freq', nargs='?', type=int, default=2,
                     help='Frequency for evaluating model [epochs num]')
     parser.add_argument('--logs_freq', nargs='?', type=int, default=20,
                     help='Frequency for saving logs [steps num]')
