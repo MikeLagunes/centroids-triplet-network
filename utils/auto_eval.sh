@@ -6,9 +6,15 @@
 
 # all
 
+cd /home/miguel_dynium/centroids-triplet-network
 
-python test/test_triplet_resnet_softmax.py --model_path=/media/alexa/DATA/Miguel/evaluation/ICRA/novel/toybox/striplet/lambda_0.1/3/triplet_softmax_l1_toybox_temp.pkl --test_path=/media/alexa/DATA/Miguel/evaluation/ICRA/novel/toybox/striplet/lambda_0.1/3/ --split=train --dataset=toybox
-python test/test_triplet_resnet_softmax.py --model_path=/media/alexa/DATA/Miguel/evaluation/ICRA/novel/toybox/striplet/lambda_0.1/3/triplet_softmax_l1_toybox_temp.pkl --test_path=/media/alexa/DATA/Miguel/evaluation/ICRA/novel/toybox/striplet/lambda_0.1/3/ --split=test --dataset=toybox
+python3 train/train_ctn.py --alpha_factor=1e-4 --beta_factor=1e-4 --id='1e-4_1e-4' --n_epoch=33
+python3 train/train_ctn.py --alpha_factor=1e-3 --beta_factor=1e-3 --id='1e-3_1e-3' --n_epoch=33
+python3 train/train_ctn.py --alpha_factor=1e-2 --beta_factor=1e-3 --id='1e-2_1e-2' --n_epoch=33
+python3 train/train_ctn.py --alpha_factor=1e-1 --beta_factor=1e-3 --id='1e-1_1e-3' --n_epoch=33
+python3 train/train_ctn.py --alpha_factor=1e-3 --beta_factor=1e-2 --id='1e-3_1e-2' --n_epoch=33
+python3 train/train_ctn.py --alpha_factor=1e-3 --beta_factor=1e-1 --id='1e-3_1e-1' --n_epoch=33
+
 
 
 #Core50

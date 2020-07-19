@@ -116,9 +116,7 @@ def train(args):
 
         # Get centroids:
 
-        if epoch % 2  == 0: #epoch % 4
-
-            exemplars_torch = get_centroids(model, exemplars_torch, t_loader, n_classes)
+        exemplars_torch = get_centroids(model, exemplars_torch, t_loader, n_classes)
             
         # warmup
 
