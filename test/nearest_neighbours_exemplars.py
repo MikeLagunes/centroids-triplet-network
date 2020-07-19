@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--ckpt_path', nargs='?', type=str, default="",
                         help='Path of the input image')
-    parser.add_argument('--instances', nargs='?', type=str, default="full",
+    parser.add_argument('--instances', nargs='?', type=str, default="full", 
                         help='Path of the input image')
     parser.add_argument('--num_classes', nargs='?', type=int, default=10,
                         help='Number of classes in dataset')

@@ -266,7 +266,7 @@ if __name__ == '__main__':
                     help='Path to save checkpoints')
     parser.add_argument('--lambda_factor', nargs='?', type=float, default=1e-3,
                     help='lambda_factor')
-    parser.add_argument('--wd', nargs='?', type=float, default=1e-4,
+    parser.add_argument('--wd', nargs='?', type=float, default=1e-5,
                     help='l2 regularization')
     parser.add_argument('--closeness', nargs='?', type=int, default=1,
                     help='neighboring frames')
