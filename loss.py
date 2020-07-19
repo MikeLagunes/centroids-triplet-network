@@ -287,7 +287,7 @@ class CentroidsTripletLoss(nn.Module):
     """
 
     def __init__(self, alpha_factor=0.0, beta_factor=0.0):
-        super(ExemplarSoftmaxLoss, self).__init__()
+        super(CentroidsTripletLoss, self).__init__()
 
         self.loss_fn = nn.CrossEntropyLoss()
         self.alpha_factor = alpha_factor
@@ -344,6 +344,6 @@ class CentroidsTripletLoss(nn.Module):
 
  
 
-        loss_total =  loss_softmax + self.alpha_factor*loss_center + self.beta_factor*loss_triplet##.sum() +
+        loss_total =  loss_softmax + self.alpha_factor*loss_triplet  + self.beta_factor*loss_center##.sum() +
 
         return loss_total, loss_triplet, loss_softmax, loss_center #
