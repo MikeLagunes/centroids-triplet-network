@@ -33,7 +33,7 @@ num_class = 0
 
 
 losses = [losses_softmax, losses_triplet, losses_rec, losses_sum, losses_nby]
-losses_id = ["loss_softmax", "loss_triplet", "loss_rec", "loss_sum", "loss_nby"]
+losses_id = ["loss_softmax", "loss_triplet", "loss_rec", "loss_sum", "loss_cetroids"]
 
 accuracies = [accuracies_all, accuracies_known, accuracies_novel]
 accuracies_id = ["accuracies_all", "accuracies_known", "accuracies_novel"]

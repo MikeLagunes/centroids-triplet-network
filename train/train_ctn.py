@@ -92,8 +92,6 @@ def train(args):
 
     optimizer = optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.9, weight_decay=args.wd)#, weight_decay=1e-5
 
-    loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
-
     show_setup(args,n_classes, optimizer, loss_ctn)
 
     # Training from Checkpoint
@@ -127,38 +125,42 @@ def train(args):
         if epoch == 0:
 
             loss_ctn = CentroidsTripletLoss(alpha_factor=0, beta_factor=0)
+
+        else:
+            loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
+
             
-            for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
+        for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
-                images = Variable(images.cuda())
-                images_pos = Variable(images_pos.cuda())
-                images_neg = Variable(images_neg.cuda())
+            images = Variable(images.cuda())
+            images_pos = Variable(images_pos.cuda())
+            images_neg = Variable(images_neg.cuda())
 
-                labels_anchor = labels_anchor.view(len(labels_anchor))
-                labels_anchor = Variable(labels_anchor.cuda())
+            labels_anchor = labels_anchor.view(len(labels_anchor))
+            labels_anchor = Variable(labels_anchor.cuda())
 
-                labels_pos = labels_pos.view(len(labels_pos))
-                labels_pos = Variable(labels_pos.cuda())
+            labels_pos = labels_pos.view(len(labels_pos))
+            labels_pos = Variable(labels_pos.cuda())
 
-                labels_neg = labels_neg.view(len(labels_neg))
-                labels_neg = Variable(labels_neg.cuda())
+            labels_neg = labels_neg.view(len(labels_neg))
+            labels_neg = Variable(labels_neg.cuda())
 
-                #print(labels_anchor)
+            #print(labels_anchor)
 
-                labels = torch.cat((labels_anchor, labels_pos, labels_neg), 0)
+            labels = torch.cat((labels_anchor, labels_pos, labels_neg), 0)
 
-                optimizer.zero_grad()
-                embed_anch, embed_pos, embed_neg, predictions  = model(images, images_pos, images_neg)
+            optimizer.zero_grad()
+            embed_anch, embed_pos, embed_neg, predictions  = model(images, images_pos, images_neg)
 
-                loss, triplet_loss, loss_softmax, loss_nby = loss_ctn(embed_anch, embed_pos, embed_neg, predictions, labels_anchor, labels_neg, exemplars_torch)
+            loss, triplet_loss, loss_softmax, loss_nby = loss_ctn(embed_anch, embed_pos, embed_neg, predictions, labels_anchor, labels_neg, exemplars_torch)
 
-                loss.backward()
-                optimizer.step()
-                global_step += 1
-            
-                if global_step % args.logs_freq == 0:
+            loss.backward()
+            optimizer.step()
+            global_step += 1
+        
+            if global_step % args.logs_freq == 0:
 
-                    log_loss(epoch, global_step, loss_sum=loss.item(), loss_triplet=triplet_loss.item(), loss_softmax=loss_softmax.item(), loss_nby=loss_nby.item()) 
+                log_loss(epoch, global_step, loss_sum=loss.item(), loss_triplet=triplet_loss.item(), loss_softmax=loss_softmax.item(), loss_nby=loss_nby.item()) 
             
         save_checkpoint(epoch, model, optimizer, "temp")
 
@@ -194,7 +196,7 @@ if __name__ == '__main__':
                         help='Train Dataset split to use [\'full, known, novel\']')
     parser.add_argument('--instances_to_eval', nargs='?', type=str, default='all',
                         help='Test Dataset split to use [\'full, known, novel, all\']')
-    parser.add_argument('--n_epoch', nargs='?', type=int, default=500, 
+    parser.add_argument('--n_epoch', nargs='?', type=int, default=30, 
                         help='# of the epochs')
     parser.add_argument('--batch_size', nargs='?', type=int, default=30,
                         help='Batch Size')
