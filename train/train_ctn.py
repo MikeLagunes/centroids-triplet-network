@@ -92,7 +92,7 @@ def train(args):
 
     optimizer = optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.9, weight_decay=args.wd)#, weight_decay=1e-5
 
-    loss_ctn = ExemplarSoftmaxLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
+    loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
 
     show_setup(args,n_classes, optimizer, loss_fn)
 
@@ -126,7 +126,7 @@ def train(args):
 
         if epoch == 0:
 
-            loss_ctn = ExemplarSoftmaxLoss(alpha_factor=0, beta_factor=0)
+            loss_ctn = CentroidsTripletLoss(alpha_factor=0, beta_factor=0)
             
             for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
