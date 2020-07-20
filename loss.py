@@ -317,6 +317,8 @@ class CentroidsTripletLoss(nn.Module):
    
         for i in range(batch_size):
 
+            print(exemplars)
+
             distance_ref_1 = torch.norm(anchor[i] - exemplars[labels_anchor[i].item()], p=1) 
             distance_neg_1 = torch.norm(negative[i] - exemplars, p=1)
 
