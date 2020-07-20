@@ -65,7 +65,7 @@ def KNN_precision():
     # for i in range(4,len(y_test)):
     #     X_test[i] = (X_test[i]+X_test[i-1]+X_test[i-2]+X_test[i-3]+X_test[i-4])/5  
 
-    neigh = KNeighborsClassifier(n_neighbors=1, n_jobs=-1)
+    neigh = KNeighborsClassifier(n_neighbors=1, n_jobs=-1, p=1)
     neigh.fit(exemplars, exemplars_labels)
 
     

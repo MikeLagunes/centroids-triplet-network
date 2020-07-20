@@ -292,7 +292,7 @@ class CentroidsTripletLoss(nn.Module):
         self.loss_fn = nn.CrossEntropyLoss()
         self.alpha_factor = alpha_factor
         self.beta_factor = beta_factor
-        self.l2 = nn.PairwiseDistance(p=2)
+        self.l2 = nn.PairwiseDistance(p=1)
                     
     def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars ):
         
