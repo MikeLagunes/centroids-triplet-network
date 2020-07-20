@@ -317,13 +317,13 @@ class CentroidsTripletLoss(nn.Module):
    
         for i in range(batch_size):
 
-            print(exemplars)
+            print('examplars:', exemplars.shape)
 
             distance_ref_1 = torch.norm(anchor[i] - exemplars[labels_anchor[i].item()], p=1) 
-            distance_neg_1 = torch.norm(negative[i] - exemplars, p=1)
+            distance_neg_1 = torch.norm(negative[i] - exemplars, p=1, dim=1)
 
 
-            print('distance_neg_1', distance_neg_1)
+            print('distance_neg_1', distance_neg_1.shape)
             
             triplet_positive =  torch.norm(anchor[i] - positive[i], p=1)
             triplet_negative =  torch.norm(anchor[i] - negative[i], p=1)
