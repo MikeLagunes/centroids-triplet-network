@@ -293,7 +293,7 @@ class CentroidsTripletLoss(nn.Module):
         self.alpha_factor = alpha_factor
         self.beta_factor = beta_factor
         self.l2 = nn.PairwiseDistance(p=1)
-        self.num_classes = n_classes
+        self.num_classes = num_classes
                     
     def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars, num_classes ):
         
