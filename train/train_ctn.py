@@ -54,6 +54,8 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
         norm = torch.norm(exemplars_torch[i])
         if norm.sum != 0:
             exemplars_torch[i] = torch.div(exemplars_torch[i],norm)
+
+    print(exemplars_torch)        
         
 
     print("OK centers")
