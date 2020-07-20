@@ -36,7 +36,7 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
     for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
-        if i % 50 == 0:
+        if i % 10 == 0:
 
             images = Variable(images.cuda())
 
