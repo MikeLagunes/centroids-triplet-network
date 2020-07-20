@@ -286,15 +286,16 @@ class CentroidsTripletLoss(nn.Module):
     Takes embeddings of an anchor sample, a positive sample, a negative sample, logits and class labels
     """
 
-    def __init__(self, alpha_factor=0.0, beta_factor=0.0):
+    def __init__(self, alpha_factor=0.0, beta_factor=0.0, num_classes=n_classes):
         super(CentroidsTripletLoss, self).__init__()
 
         self.loss_fn = nn.CrossEntropyLoss()
         self.alpha_factor = alpha_factor
         self.beta_factor = beta_factor
         self.l2 = nn.PairwiseDistance(p=1)
+        self.num_classes = n_classes
                     
-    def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars ):
+    def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars, num_classes ):
         
         exemplars = exemplars.cuda()
      
@@ -316,18 +317,18 @@ class CentroidsTripletLoss(nn.Module):
    
         for i in range(batch_size):
 
-            distance_ref_1 = self.l2(anchor[i].view(1,-1), exemplars[labels_anchor[i].item()].view(1,-1))
-            distance_neg_1 = self.l2(negative[i].view(1,-1), exemplars[labels_anchor[i].item()].view(1,-1))
+            distance_ref_1 = torch.norm(anchor[] - exemplars[labels_anchor[i].item()], p=1) 
+            distance_neg_1 = torch.norm(negative[i] - exemplars[labels_anchor[i].item()], p=1)
             
-            triplet_positive = self.l2(anchor[i].view(1,-1), positive[i].view(1,-1))
-            triplet_negative = self.l2(anchor[i].view(1,-1), negative[i].view(1,-1))
+            triplet_positive =  torch.norm(anchor[i] - positive[i], p=1)
+            triplet_negative =  torch.norm(anchor[i] - negative[i], p=1)
 
+            # print('distances: ', self.l2(anchor[i].view(1,-1), exemplars))
 
-            loss_center += F.relu(distance_ref_1 - distance_neg_1)
+            # loss_center += F.relu(distance_ref_1 - distance_neg_1)
            
-            loss_triplet += F.relu(triplet_positive - triplet_negative)
+            # loss_triplet += F.relu(triplet_positive - triplet_negative)
 
- 
 
         loss_total =  loss_softmax + self.alpha_factor*loss_triplet  + self.beta_factor*loss_center##.sum() +
 

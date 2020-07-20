@@ -124,10 +124,10 @@ def train(args):
 
         if epoch == 0:
 
-            loss_ctn = CentroidsTripletLoss(alpha_factor=0, beta_factor=0)
+            loss_ctn = CentroidsTripletLoss(alpha_factor=0, beta_factor=0, num_classes=n_classes)
 
         else:
-            loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor)
+            loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor, num_classes=n_classes)
 
             
         for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
