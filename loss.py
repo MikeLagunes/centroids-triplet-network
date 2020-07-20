@@ -295,7 +295,7 @@ class CentroidsTripletLoss(nn.Module):
         self.l2 = nn.PairwiseDistance(p=1)
         self.num_classes = num_classes
                     
-    def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars, num_classes ):
+    def forward(self, anchor, positive, negative, outputs, labels_anchor, labels_neg, exemplars ):
         
         exemplars = exemplars.cuda()
      
