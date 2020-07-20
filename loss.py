@@ -286,7 +286,7 @@ class CentroidsTripletLoss(nn.Module):
     Takes embeddings of an anchor sample, a positive sample, a negative sample, logits and class labels
     """
 
-    def __init__(self, alpha_factor=0.0, beta_factor=0.0, num_classes=n_classes):
+    def __init__(self, alpha_factor=0.0, beta_factor=0.0, num_classes=0):
         super(CentroidsTripletLoss, self).__init__()
 
         self.loss_fn = nn.CrossEntropyLoss()
