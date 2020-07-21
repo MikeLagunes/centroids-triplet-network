@@ -331,23 +331,26 @@ class CentroidsTripletLoss(nn.Module):
 
             disrance_rest = torch.norm(anchor[i] - exemplars_non_self, p=1, dim=1)
             
-            distance_closest = torch.argmin(distance_all)
-            distance_closest_rest = torch.argmin(disrance_rest)
+            distance_closest = torch.min(distance_all) # argmin
+            distance_closest_rest = torch.min(disrance_rest)
 
-            print('current instance:', labels_anchor[i].item())
-            print('closest:', distance_closest, distance_closest_rest)
+            #print('current instance:', labels_anchor[i].item())
+            #print('closest:', distance_closest, distance_closest_rest)
 
 
             # print('distance_all', distance_all.shape, distance_all)
             
             triplet_positive =  torch.norm(anchor[i] - positive[i], p=1)
             triplet_negative =  torch.norm(anchor[i] - negative[i], p=1)
+
             triplet_distance = F.relu(triplet_positive - triplet_negative)
+            centroids_distance = F.relu(distance_ref - distance_closest)
+            centroids_distance_rest = F.relu(distance_ref - distance_closest_rest)
 
             print('triplet distances: ', triplet_distance) #torch.norm(triplet_positive-triplet_negative), p=1)
-
-            print('centroids ref: ', distance_ref)
-            print('centroids closest: ', torch.min(distance_all), torch.min(disrance_rest), labels_anchor[i].item())
+            print('centroid distances: ', centroids_distance, centroids_distance_rest)
+            #print('centroids ref: ', distance_ref)
+            #print('centroids closest: ', torch.min(distance_all), torch.min(disrance_rest), labels_anchor[i].item())
 
             # loss_center += F.relu(distance_ref_1 - distance_neg_1)
            
