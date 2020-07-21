@@ -347,6 +347,8 @@ class CentroidsTripletLoss(nn.Module):
             centroids_distance = F.relu(distance_ref - distance_closest)
             centroids_distance_rest = F.relu(distance_ref - distance_closest_rest)
 
+            print(centroids_distance_rest)
+
             #print('triplet distances: ', triplet_distance) #torch.norm(triplet_positive-triplet_negative), p=1)
             #print('centroid distances: ', centroids_distance, centroids_distance_rest)
             #print('centroids ref: ', distance_ref)
