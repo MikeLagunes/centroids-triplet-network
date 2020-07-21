@@ -325,7 +325,7 @@ class CentroidsTripletLoss(nn.Module):
             #exemplars_temp = exemplars.clone()
             #exemplars_temp[labels_anchor[i].item()] = 10 * torch.ones([512])
 
-            exemplars_non_self = torch.FloatTensor([exemplars[x].cpu().data.numpy() for x in range(exemplars.shape[0]) if x != labels_anchor[i].item()])
+            exemplars_non_self = torch.FloatTensor([exemplars[x].cpu().data.numpy() for x in range(exemplars.shape[0]) if x != labels_anchor[i].item()]).cuda()
             print('examplars_self_exc:', exemplars_non_self.shape)
             
 
