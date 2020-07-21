@@ -320,10 +320,18 @@ class CentroidsTripletLoss(nn.Module):
             print('examplars:', exemplars.shape)
 
             distance_ref = torch.norm(anchor[i] - exemplars[labels_anchor[i].item()], p=1) 
-            distance_all = torch.norm(anchor[i] - exemplars[examplars[labels_anchor[i].item()]], p=1, dim=1)
+            distance_all = torch.norm(anchor[i] - exemplars, p=1, dim=1)
+
+            #exemplars_temp = exemplars.clone()
+            #exemplars_temp[labels_anchor[i].item()] = 10 * torch.ones([512])
+
             exemplars_non_self = torch.FloatTensor([exemplars[x].numpy() for x in range(exemplars.shape[0]) if x != labels_anchor[i].item()])
             print('examplars_self_exc:', exemplars_non_self.shape)
+            
+
+            c = torch.norm(anchor[i] - exemplars_non_self, p=1, dim=1)
             distance_closest = torch.argmin(distance_all)
+            distance_closest_rest = torch.argmin(disrance_rest)
 
 
             print('distance_all', distance_all.shape, distance_all)
@@ -335,7 +343,7 @@ class CentroidsTripletLoss(nn.Module):
             print('triplet distances: ', triplet_distance) #torch.norm(triplet_positive-triplet_negative), p=1)
 
             print('centroids ref: ', distance_ref)
-            print('centroids closest: ', torch.argmin(distance_all), labels_anchor[i].item())
+            print('centroids closest: ', torch.min(distance_all), torch.min(disrance_rest), labels_anchor[i].item())
 
             # loss_center += F.relu(distance_ref_1 - distance_neg_1)
            
