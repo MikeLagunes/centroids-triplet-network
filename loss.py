@@ -347,14 +347,14 @@ class CentroidsTripletLoss(nn.Module):
             centroids_distance = F.relu(distance_ref - distance_closest)
             centroids_distance_rest = F.relu(distance_ref - distance_closest_rest)
 
-            print('triplet distances: ', triplet_distance) #torch.norm(triplet_positive-triplet_negative), p=1)
-            print('centroid distances: ', centroids_distance, centroids_distance_rest)
+            #print('triplet distances: ', triplet_distance) #torch.norm(triplet_positive-triplet_negative), p=1)
+            #print('centroid distances: ', centroids_distance, centroids_distance_rest)
             #print('centroids ref: ', distance_ref)
             #print('centroids closest: ', torch.min(distance_all), torch.min(disrance_rest), labels_anchor[i].item())
 
-            # loss_center += F.relu(distance_ref_1 - distance_neg_1)
+            loss_center += triplet_distance
            
-            # loss_triplet += F.relu(triplet_positive - triplet_negative)
+            loss_triplet += centroids_distance_rest
 
 
         loss_total =  loss_softmax + self.alpha_factor*loss_triplet  + self.beta_factor*loss_center##.sum() +

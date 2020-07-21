@@ -208,9 +208,9 @@ if __name__ == '__main__':
                         help='Learning Rate')
     parser.add_argument('--ckpt_path', nargs='?', type=str, default='.',
                     help='Path to save checkpoints')
-    parser.add_argument('--alpha_factor', nargs='?', type=float, default=1e-3,
+    parser.add_argument('--alpha_factor', nargs='?', type=float, default=1e-2,
                     help='alpha_factor')
-    parser.add_argument('--beta_factor', nargs='?', type=float, default=1e-3,
+    parser.add_argument('--beta_factor', nargs='?', type=float, default=1e-2,
                     help='beta_factor')
     parser.add_argument('--wd', nargs='?', type=float, default=1e-5,
                     help='l2 regularization')
