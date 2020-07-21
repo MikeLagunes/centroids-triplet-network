@@ -329,7 +329,8 @@ class CentroidsTripletLoss(nn.Module):
             print('examplars_self_exc:', exemplars_non_self.shape)
             
 
-            c = torch.norm(anchor[i] - exemplars_non_self, p=1, dim=1)
+            disrance_rest = torch.norm(anchor[i] - exemplars_non_self, p=1, dim=1)
+            
             distance_closest = torch.argmin(distance_all)
             distance_closest_rest = torch.argmin(disrance_rest)
 
