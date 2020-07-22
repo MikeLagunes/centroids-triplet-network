@@ -319,8 +319,8 @@ class CentroidsTripletLoss(nn.Module):
 
             #print('examplars:', exemplars.shape)
 
-            distance_ref = torch.norm(anchor[i] - exemplars[labels_anchor[i].item()], p=1) 
-            distance_all = torch.norm(anchor[i] - exemplars, p=1, dim=1)
+            distance_ref = torch.norm(anchor[i] - exemplars[labels_anchor[i].item()], p=2) 
+            distance_all = torch.norm(anchor[i] - exemplars, p=2, dim=1)
 
             #exemplars_temp = exemplars.clone()
             #exemplars_temp[labels_anchor[i].item()] = 10 * torch.ones([512])
@@ -329,7 +329,7 @@ class CentroidsTripletLoss(nn.Module):
             # print('examplars_self_exc:', exemplars_non_self.shape)
             
 
-            disrance_rest = torch.norm(anchor[i] - exemplars_non_self, p=1, dim=1)
+            disrance_rest = torch.norm(anchor[i] - exemplars_non_self, p=2, dim=1)
             
             distance_closest = torch.min(distance_all) # argmin
             distance_closest_rest = torch.min(disrance_rest)
@@ -340,8 +340,8 @@ class CentroidsTripletLoss(nn.Module):
 
             # print('distance_all', distance_all.shape, distance_all)
             
-            triplet_positive =  torch.norm(anchor[i] - positive[i], p=1)
-            triplet_negative =  torch.norm(anchor[i] - negative[i], p=1)
+            triplet_positive =  torch.norm(anchor[i] - positive[i], p=2)
+            triplet_negative =  torch.norm(anchor[i] - negative[i], p=2)
 
             triplet_distance = F.relu(triplet_positive - triplet_negative)
             centroids_distance = F.relu(distance_ref - distance_closest)
@@ -354,9 +354,9 @@ class CentroidsTripletLoss(nn.Module):
             #print('centroids ref: ', distance_ref)
             #print('centroids closest: ', torch.min(distance_all), torch.min(disrance_rest), labels_anchor[i].item())
 
-            loss_center += triplet_distance
+            loss_center += centroids_distance 
            
-            loss_triplet += centroids_distance_rest
+            loss_triplet += triplet_distance
 
 
         loss_total =  loss_softmax + self.alpha_factor*loss_triplet  + self.beta_factor*loss_center##.sum() +
