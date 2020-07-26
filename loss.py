@@ -325,14 +325,14 @@ class CentroidsTripletLoss(nn.Module):
             #exemplars_temp = exemplars.clone()
             #exemplars_temp[labels_anchor[i].item()] = 10 * torch.ones([512])
 
-            exemplars_non_self = torch.FloatTensor([exemplars[x].cpu().data.numpy() for x in range(exemplars.shape[0]) if x != labels_anchor[i].item()]).cuda()
+            # exemplars_non_self = torch.FloatTensor([exemplars[x].cpu().data.numpy() for x in range(exemplars.shape[0]) if x != labels_anchor[i].item()]).cuda()
             # print('examplars_self_exc:', exemplars_non_self.shape)
             
 
-            disrance_rest = torch.norm(anchor[i] - exemplars_non_self, p=2, dim=1)
+            #disrance_rest = torch.norm(anchor[i] - exemplars_non_self, p=2, dim=1)
             
             distance_closest = torch.min(distance_all) # argmin
-            distance_closest_rest = torch.min(disrance_rest)
+            #distance_closest_rest = torch.min(disrance_rest)
 
             #print('current instance:', labels_anchor[i].item())
             #print('closest:', distance_closest, distance_closest_rest)
@@ -345,7 +345,7 @@ class CentroidsTripletLoss(nn.Module):
 
             triplet_distance = F.relu(triplet_positive - triplet_negative)
             centroids_distance = F.relu(distance_ref - distance_closest)
-            centroids_distance_rest = F.relu(distance_ref - distance_closest_rest)
+            #centroids_distance_rest = F.relu(distance_ref - distance_closest_rest)
 
             #print(centroids_distance_rest)
 
