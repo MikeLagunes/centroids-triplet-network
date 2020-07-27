@@ -334,8 +334,13 @@ class CentroidsTripletLoss(nn.Module):
             distance_closest = torch.min(distance_all) # argmin
             #print('current instance: ', labels_anchor[i], 'closest centroid: ', torch.argmin(distance_all))
 
+            forbidden = [1, 2, 10, 11, 13,20, 22, 23, 28, 31, 33, 38, 39, 43, 44, 5]
+
             if labels_anchor[i] != torch.argmin(distance_all):
-                print( torch.argmin(distance_all).item() + 1)
+                
+                if (torch.argmin(distance_all).item() + 1) in forbidden:
+                    print( torch.argmin(distance_all).item() + 1)
+                    print('error centroid')
             #distance_closest_rest = torch.min(disrance_rest)
 
             #print('current instance:', labels_anchor[i].item())
@@ -343,6 +348,8 @@ class CentroidsTripletLoss(nn.Module):
 
 
             # print('distance_all', distance_all.shape, distance_all)
+
+            
             
             triplet_positive =  torch.norm(anchor[i] - positive[i], p=2)
             triplet_negative =  torch.norm(anchor[i] - negative[i], p=2)
