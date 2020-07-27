@@ -333,6 +333,9 @@ class CentroidsTripletLoss(nn.Module):
             
             distance_closest = torch.min(distance_all) # argmin
             print('current instance: ', labels_anchor[i], 'closest centroid: ', torch.argmin(distance_all))
+
+            if labels_anchor[i] != torch.argmin(distance_all):
+                print( torch.argmin(distance_all).item())
             #distance_closest_rest = torch.min(disrance_rest)
 
             #print('current instance:', labels_anchor[i].item())
