@@ -184,6 +184,6 @@ def triplet_resnet50_softmax(pretrained=False,  num_classes=50, embedding_size=1
         model.load_state_dict(weights_imagenet)
 
     model.fc = nn.Linear(2048, embedding_size)
-    model.fc_softmax = nn.Linear(embedding_size, num_classes)
+    model.fc_softmax = nn.Linear(2048, num_classes)
 
     return model
