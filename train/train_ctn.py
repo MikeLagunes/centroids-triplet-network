@@ -19,7 +19,11 @@ from utils import *
 import torch.nn.functional as F
 
 
+
+
 def get_centroids(model, exemplars_torch, t_loader, n_classes):
+
+    forbidden = [1, 2, 10, 11, 13,20, 22, 23, 28, 31, 33, 38, 39, 43, 44, 50]
 
     print("Updating centers")
 
@@ -50,12 +54,17 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
 
     for i in range(n_classes):
+
+        if i in forbidden:
+            exemplars_torch[i] = 10*torch.zeros(n_classes, 512, dtype=torch.float)
+
+        else:
         
-        norm = torch.norm(exemplars_torch[i])
+            norm = torch.norm(exemplars_torch[i])
         
-        if norm.item() != 0.:
+            if norm.item() != 0.:
             # print(norm, exemplars_torch[i])
-            exemplars_torch[i] = torch.div(exemplars_torch[i],norm)
+                exemplars_torch[i] = torch.div(exemplars_torch[i],norm)
 
     #print(exemplars_torch)        
         
