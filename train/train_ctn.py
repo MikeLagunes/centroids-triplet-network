@@ -56,7 +56,7 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
     for i in range(n_classes):
 
         if i in forbidden:
-            exemplars_torch[i] = 10*torch.zeros(n_classes, 512, dtype=torch.float)
+            exemplars_torch[i] = 10*torch.zeros(512, dtype=torch.float)
 
         else:
         
