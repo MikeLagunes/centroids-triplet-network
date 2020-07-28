@@ -51,8 +51,6 @@ def KNN_precision():
         norm = LA.norm(exemplars[i])
         if norm != 0:
             exemplars[i] = exemplars[i]/norm
-        else:
-            print('norm 0 in nc?')
 
 
 
