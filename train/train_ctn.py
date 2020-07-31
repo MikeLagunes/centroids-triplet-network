@@ -31,10 +31,8 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
     
     trainloader = data.DataLoader(t_loader, batch_size=1, num_workers=6, shuffle=False)
 
-    exemplars_labels_torch = torch.zeros(n_classes,1)
-
     exemplars_torch = exemplars_torch.cpu()
-    exemplars_labels_torch = exemplars_labels_torch.cpu() 
+
 
     model.train()
 
@@ -48,15 +46,13 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
             
             embed_anch =  embed_anch.detach().cpu()
 
-            sum_curr = exemplars_torch[labels_anchor.item()] + embed_anch[0]
-
-            exemplars_torch[labels_anchor.item()] = sum_curr  
+            exemplars_torch[labels_anchor.item()] += embed_anch[0]
 
 
     for i in range(n_classes):
 
         if i in forbidden:
-            exemplars_torch[i] = 10*torch.zeros(512, dtype=torch.float)
+            exemplars_torch[i] = 10*torch.ones(512, dtype=torch.float)
 
         else:
         
