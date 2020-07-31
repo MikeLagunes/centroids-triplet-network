@@ -1,4 +1,4 @@
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier, NearestCentroid
 from sklearn.neural_network import MLPClassifier
 from time import time
 import numpy as np
@@ -66,14 +66,17 @@ def KNN_precision():
     # for i in range(4,len(y_test)):
     #     X_test[i] = (X_test[i]+X_test[i-1]+X_test[i-2]+X_test[i-3]+X_test[i-4])/5  
 
-    neigh = KNeighborsClassifier(n_neighbors=1, n_jobs=-1, p=2)
-    neigh.fit(exemplars, exemplars_labels)
+    clf = NearestCentroid()
+    clf.fit(exemplars, exemplars_labels)
+
+    # neigh = KNeighborsClassifier(n_neighbors=1, n_jobs=-1, p=2)
+    # neigh.fit(exemplars, exemplars_labels)
 
     
 
     total = len(y_test-1)
     correct = 0
-    correct += (neigh.predict(X_test) == y_test).sum()
+    correct += (clf.predict(X_test) == y_test).sum()
 
     sys.stdout.write("{}".format(100.*correct/total))
     sys.stdout.flush()
