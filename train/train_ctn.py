@@ -29,10 +29,9 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
     # TODO: Update batch size > 1
     
-    trainloader = data.DataLoader(t_loader, batch_size=1, num_workers=6, shuffle=False)
+    trainloader = data.DataLoader(t_loader, batch_size=1, num_workers=6, shuffle=True)
 
     exemplars_torch = exemplars_torch.cpu()
-
 
     model.train()
 
