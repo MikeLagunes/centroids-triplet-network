@@ -301,6 +301,8 @@ class CentroidsTripletLoss(nn.Module):
      
         labels = torch.cat((labels_anchor, labels_anchor, labels_neg), 0)
         loss_softmax = self.loss_fn(input=outputs, target=labels)
+
+        print('labels: ', labels)
         
         batch_size = anchor.size(0)
 
