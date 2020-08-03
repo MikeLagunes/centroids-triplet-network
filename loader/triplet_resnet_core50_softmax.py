@@ -228,9 +228,9 @@ class triplet_resnet_core50_softmax(data.Dataset):
         :param img:
         :param lbl:
         """
-        img = img[:, :, ::-1]
+        #img = img[:, :, ::-1]
         img = img.astype(np.float64)
-        img -= self.mean
+        #img -= self.mean
       
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
@@ -239,9 +239,9 @@ class triplet_resnet_core50_softmax(data.Dataset):
         img = img.transpose(2, 0, 1)
 
 
-        img_pos = img_pos[:, :, ::-1]
+        #img_pos = img_pos[:, :, ::-1]
         img_pos = img_pos.astype(np.float64)
-        img_pos -= self.mean
+        #img_pos -= self.mean
        
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
@@ -251,9 +251,9 @@ class triplet_resnet_core50_softmax(data.Dataset):
 
 
 
-        img_neg = img_neg[:, :, ::-1]
+        #img_neg = img_neg[:, :, ::-1]
         img_neg = img_neg.astype(np.float64)
-        img_neg -= self.mean
+        #img_neg -= self.mean
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
         img_neg = img_neg.astype(float) / 255.0
@@ -344,7 +344,6 @@ if __name__ == '__main__':
             axarr[j][0].imshow(imgs[j])
             axarr[j][1].imshow(imgs_pos[j])
             axarr[j][2].imshow(imgs_neg[j])
-
-            print(lbl[j], lbl[j], lbl_pos[j], lbl_pos[j], lbl_neg[j], lbl_neg[j])
+            print(lbl[j], lbl_pos[j], lbl_neg[j])
             
         plt.show()
