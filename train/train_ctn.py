@@ -192,7 +192,7 @@ if __name__ == '__main__':
                         help='Architecture to use [\'fcn8s, unet, segnet etc\']')
     parser.add_argument('--dataset', nargs='?', type=str, default='core50',
                         help='Dataset to use [\'tless, core50, toybox etc\']')
-    parser.add_argument('--embedding_size', nargs='?', type=int, default=512, 
+    parser.add_argument('--embedding_size', nargs='?', type=int, default=1024, 
                         help='dense layer size for inference')
     parser.add_argument('--img_rows', nargs='?', type=int, default=224, 
                         help='Height of the input image')
