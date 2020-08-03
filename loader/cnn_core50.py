@@ -138,9 +138,9 @@ class cnn_core50(data.Dataset):
         :param img:
         :param lbl:
         """
-        img = img[:, :, ::-1]
+        #img = img[:, :, ::-1]
         img = img.astype(np.float64)
-        img -= self.mean
+        #img -= self.mean
         #img = m.imresize(img, (self.img_size[0], self.img_size[1]))
         # Resize scales images from 0 to 255, thus we need
         # to divide by 255.0
