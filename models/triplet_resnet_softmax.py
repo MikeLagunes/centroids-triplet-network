@@ -154,7 +154,7 @@ class Triplet_ResNet_Softmax(nn.Module):
         x_embedding = self.fc(x) 
         x_softmax = self.fc_softmax(x)
 
-        # x_embedding = F.normalize(x_embedding)
+        x_embedding = F.normalize(x_embedding)
 
         return x_softmax, x_embedding
 
