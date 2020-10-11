@@ -15,8 +15,6 @@ import glob
 import random
 import argparse
 
-
-
 train_scenes = [1]
 
 train_scene = "scene_01"
@@ -32,26 +30,19 @@ def ordered_glob(rootdir='.', instances='', split=''):
 
     for folder in folders:
 
-        #if split == 'train':
-
         folder_id = os.path.split(folder)[1]
 
         for instance in instances:
 
             if folder_id.find(instance) >= 0:
 
-                # remove for all training scenes
-
-                if folder.find(train_scene) >= 0  : #or folder.find(test_scenes[0]) >= 0 or folder.find(test_scenes[1]) >= 0 or folder.find(test_scenes[2]) >= 0
+                if folder.find(train_scene) >= 0: 
 
                     folder_path = folder + "/*"
 
                     filenames_folder = glob.glob(folder_path)
                     filenames_folder.sort()
                     filenames.extend(filenames_folder)
-
-    #if 'train' in rootdir:
-    #    filenames = random.sample(set(filenames), int(0.15 * len(filenames)))
 
     return filenames
 
@@ -72,9 +63,7 @@ known_classes = [ 3,  4,  5,  6,  7,  8,  9, 12, 14, 15, 16, 17, 18, 19, 21, 24,
 def get_different_object(filename):
 
 
-    similar_object_group = known_classes[:]#range(1,51) # [ 3,  4,  5,  6,  7,  8,  9, 12, 14, 15, 16, 17, 18, 19, 21, 24, 25, 26, 27, 29, 30, 32, 34, 35, 36, 37, 40, 41, 42, 45, 46, 47, 48, 49]
-
-#range(1,50)#[1,2,3,4,6,11]
+    similar_object_group = known_classes[:]
 
     obj_num = int(filename[-10:-8])
 
@@ -83,7 +72,6 @@ def get_different_object(filename):
 
     random_index = random.randint(0, len(similar_object_group)-1)
 
-    #print (len(similar_object_group))
     next_obj = similar_object_group.pop(random_index)
 
     if next_obj == obj_num:
@@ -91,10 +79,7 @@ def get_different_object(filename):
         random_index = random.randint(0, len(similar_object_group)-1)
 
         next_obj = similar_object_group.pop(random_index)
-        
-    # print ("o:",filename)
-    # print ("m:",filename[0:-27]+ "%02d" % next_obj + filename[-25:-18] + "%02d" % next_scene + filename[-16:-13] + "%02d_" % next_scene+ "%02d" % next_obj + "_%03d" % next_view + ".png")
-
+    
     return filename[0:-27]+ "%02d" % next_obj + filename[-25:-18] + "%02d" % next_scene + filename[-16:-13] + "%02d_" % next_scene + "%02d" % next_obj + "_%03d" % next_view + ".png"
 
 
@@ -108,7 +93,6 @@ def get_different_view(filename):
 
     new_filename = filename[0:-18] + "%02d" % next_scene + filename[-16:-13] + "%02d_" % next_scene + "%02d" % obj_num + "_%03d" % next_view + ".png"
           
-
     return new_filename
 
 
@@ -136,14 +120,11 @@ class triplet_resnet_core50_softmax(data.Dataset):
         self.n_classes = 50
         self.n_channels = 3
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
-        self.mean = np.array([73.15835921, 82.90891754, 72.39239876])
         self.files = {}
-
         self.images_base = os.path.join(self.root, self.split)
-
         self.files[split] = ordered_glob(rootdir=self.images_base,  instances=instances)
-
         self.instances = instances
+        self.novel_classes = [0, 1, 9, 10, 12, 19, 21, 22, 27, 30, 32, 37, 38, 42, 43, 49]
 
         if not self.files[split]:
             raise Exception("No files for split=[%s] found in %s" % (split, self.images_base))
@@ -165,31 +146,21 @@ class triplet_resnet_core50_softmax(data.Dataset):
 
         img_next_path = ""
         
-
         if self.split[0:5] == "train" :
 
             img_path_similar = get_different_view(img_path)
-
             img_path_different = get_different_object(img_path)
-   
             img_pos = Image.open(img_path_similar)
-
             img_neg = Image.open(img_path_different)
 
 
         else:
             
             img_next = Image.open(img_path)
-            #/media/mikelf/media_rob/core50_v3/test/obj_01_scene_03/C_03_01_001.png
         
         lbl         = np.array([ int(img_path[-10:-8]) - 1])
-
         lbl_pos     = np.array([ int(img_path_similar[-10:-8]) - 1])
-
         lbl_neg     = np.array([ int(img_path_different[-10:-8]) - 1])
-
-
-        #print(img_nby_path)
 
         img = self.resize_keepRatio(img)
         img_pos = self.resize_keepRatio(img_pos)
@@ -198,8 +169,6 @@ class triplet_resnet_core50_softmax(data.Dataset):
         img = np.array(img, dtype=np.uint8)
         img_pos = np.array(img_pos, dtype=np.uint8)
         img_neg = np.array(img_neg, dtype=np.uint8)
-
-
 
         if self.is_transform:
             img, img_pos, img_neg = self.transform(img, img_pos, img_neg )
@@ -228,48 +197,23 @@ class triplet_resnet_core50_softmax(data.Dataset):
         :param img:
         :param lbl:
         """
-        #img = img[:, :, ::-1]
+
         img = img.astype(np.float64)
-        #img -= self.mean
-      
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img = img.astype(float) / 255.0
-        # NHWC -> NCWH
         img = img.transpose(2, 0, 1)
 
-
-        #img_pos = img_pos[:, :, ::-1]
         img_pos = img_pos.astype(np.float64)
-        #img_pos -= self.mean
-       
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img_pos = img_pos.astype(float) / 255.0
-        # NHWC -> NCWH
         img_pos = img_pos.transpose(2, 0, 1)
 
-
-
-        #img_neg = img_neg[:, :, ::-1]
         img_neg = img_neg.astype(np.float64)
-        #img_neg -= self.mean
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img_neg = img_neg.astype(float) / 255.0
-        # NHWC -> NCWH
         img_neg = img_neg.transpose(2, 0, 1)
 
-
-
-
         img = torch.from_numpy(img).float()
-      
         img_pos = torch.from_numpy(img_pos).float()
-      
         img_neg = torch.from_numpy(img_neg).float()
      
-
         return img, img_pos, img_neg
 
 
@@ -280,7 +224,6 @@ class triplet_resnet_core50_softmax(data.Dataset):
         lbl_neg = torch.from_numpy(lbl_neg).long()
 
         return lbl, lbl_pos, lbl_neg
-
 
 
 

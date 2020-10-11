@@ -42,9 +42,7 @@ labels = {'bottle_oil':4,
 
 
 def ordered_glob(rootdir='.', instances=''):
-    """Performs recursive glob with given suffix and rootdir 
-        :param rootdir is the root directory
-        :param suffix is the suffix to be searched
+    """
     """
     filenames = []
 
@@ -76,12 +74,7 @@ def get_different_object(filename, instances=''):
     obj_curr_comp = obj_curr[0:obj_curr.find('-')]
 
     set_folder = os.path.split(os.path.split(filename)[0])[0]
-
-    #print ("set:", set_folder) 
-
     candidates = glob.glob(set_folder + "/*")
-
-    #print ("candidates:", candidates)
 
     candidates_allowed =[]
 
@@ -93,17 +86,12 @@ def get_different_object(filename, instances=''):
 
                 candidates_allowed.append(candidate)
 
-    #print(candidates_allowed)
-
     random_index = random.randint(0, len(candidates_allowed)-1)
 
-    #print (len(similar_object_group))
     next_obj = candidates_allowed.pop(random_index)
     next_obj = os.path.split(next_obj)[1]
 
     next_obj_comp = next_obj[0:next_obj.find('-')]
-
-    #print("comparinson",next_obj_comp,obj_curr_comp)
 
     while obj_curr_comp == next_obj_comp:
 
@@ -111,19 +99,9 @@ def get_different_object(filename, instances=''):
         next_obj = candidates_allowed.pop(random_index)
         next_obj = os.path.split(next_obj)[1]
         next_obj_comp = next_obj[0:next_obj.find('-')]
-        #print("comparinson 2",next_obj, obj_curr_comp)
-
-    #print("next", next_obj)
-        #next_obj = os.path.split(next_obj)[1]
-
 
     next_imgs = glob.glob(os.path.join(set_folder, next_obj) + "/*")
     next_img = random.choice(next_imgs)
-
-        #print("Next", next_imgs)
-        
-    # print ("o:",filename)
-    # print ("m:",filename[0:-27]+ "%02d" % next_obj + filename[-25:-18] + "%02d" % next_scene + filename[-16:-13] + "%02d_" % next_scene+ "%02d" % next_obj + "_%03d" % next_view + ".png")
 
     return next_img
 
@@ -133,12 +111,7 @@ def get_different_view(filename):
 
     candidates = glob.glob(obj_folder + "/*")
 
-    #print(obj_folder)
-
-    next_scene = random.choice(candidates)
-
-    #new_filename = filename[0:-18] + "%02d" % next_scene + filename[-16:-13] + "%02d_" % next_scene + "%02d" % obj_num + "_%03d" % next_view + ".png"
-          
+    next_scene = random.choice(candidates)          
 
     return next_scene
 
@@ -150,11 +123,9 @@ def get_label(img_path):
     return np.array(labels[folder_id])
 
 
-
-
 class triplet_resnet_household_softmax(data.Dataset):
 
-    """tless loader 
+    """household loader 
     """
    
 
@@ -173,16 +144,12 @@ class triplet_resnet_household_softmax(data.Dataset):
         self.is_transform = is_transform
         self.augmentations = augmentations
         self.n_classes = 20
-        self.n_channels = 3
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
-        self.mean = np.array([73.15835921, 82.90891754, 72.39239876])
         self.files = {}
-
         self.images_base = os.path.join(self.root, self.split)
-
         self.files[split] = ordered_glob(rootdir=self.images_base,  instances=instances)
-
         self.instances = instances
+        self.novel_classes = [5, 12, 17, 1, 10]
 
         if not self.files[split]:
             raise Exception("No files for split=[%s] found in %s" % (split, self.images_base))
@@ -201,31 +168,15 @@ class triplet_resnet_household_softmax(data.Dataset):
         """
         img_path = self.files[self.split][index].rstrip()
         img = Image.open(img_path)
-
-        img_next_path = ""
-        
-
-       
-
         img_path_similar = get_different_view(img_path)
         img_path_different = get_different_object(img_path, instances=self.instances)
 
-            #print(img_path_similar)
-            #print(img_path_different)
-   
         img_pos = Image.open(img_path_similar)
         img_neg = Image.open(img_path_different)
 
         lbl = get_label(img_path)
         lbl_pos =  get_label(img_path_similar)
         lbl_neg =  get_label(img_path_different)
-
-
-        # lbl =  np.array(labels[folder_id])
-        # lbl_pos = np.array(labels[folder_id])
-        # lbl_neg = np.array(labels[folder_id])
-
-        #print(img_nby_path)
 
         img = self.resize_keepRatio(img)
         img_pos = self.resize_keepRatio(img_pos)
@@ -263,45 +214,21 @@ class triplet_resnet_household_softmax(data.Dataset):
         :param img:
         :param lbl:
         """
-        img = img[:, :, ::-1]
         img = img.astype(np.float64)
-        img -= self.mean
-        img = m.imresize(img, (self.img_size[0], self.img_size[1]))
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img = img.astype(float) / 255.0
-        # NHWC -> NCWH
         img = img.transpose(2, 0, 1)
-
-
-        img_pos = img_pos[:, :, ::-1]
+        
         img_pos = img_pos.astype(np.float64)
-        img_pos -= self.mean
-        img_pos = m.imresize(img_pos, (self.img_size[0], self.img_size[1]))
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img_pos = img_pos.astype(float) / 255.0
-        # NHWC -> NCWH
         img_pos = img_pos.transpose(2, 0, 1)
-
-
-
-        img_neg = img_neg[:, :, ::-1]
+        
         img_neg = img_neg.astype(np.float64)
-        img_neg -= self.mean
-        img_neg = m.imresize(img_neg, (self.img_size[0], self.img_size[1]))
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img_neg = img_neg.astype(float) / 255.0
-        # NHWC -> NCWH
         img_neg = img_neg.transpose(2, 0, 1)
 
         img = torch.from_numpy(img).float()
-      
         img_pos = torch.from_numpy(img_pos).float()
-      
         img_neg = torch.from_numpy(img_neg).float()
-     
 
         return img, img_pos, img_neg
 

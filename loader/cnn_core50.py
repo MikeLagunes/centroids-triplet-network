@@ -21,16 +21,12 @@ test_scenes = ["scene_03","scene_07", "scene_10" ]
 
 def ordered_glob(rootdir='.', instances='', split=''):
     """Performs recursive glob with given suffix and rootdir 
-        :param rootdir is the root directory
-        :param suffix is the suffix to be searched
     """
     filenames = []
 
     folders = glob.glob(rootdir + "/*")
 
     for folder in folders:
-
-        #if split == 'train':
 
         folder_id = os.path.split(folder)[1]
 
@@ -48,16 +44,11 @@ def ordered_glob(rootdir='.', instances='', split=''):
                     filenames_folder.sort()
                     filenames.extend(filenames_folder)
 
-    #if 'train' in rootdir:
-    #    filenames = random.sample(set(filenames), int(0.15 * len(filenames)))
-
     return filenames
 
 
 def recursive_glob(rootdir='.', suffix=''):
     """Performs recursive glob with given suffix and rootdir 
-        :param rootdir is the root directory
-        :param suffix is the suffix to be searched
     """
     return [os.path.join(looproot, filename)
         for looproot, _, filenames in os.walk(rootdir)
@@ -72,12 +63,6 @@ class cnn_core50(data.Dataset):
     def __init__(self, root, split="train", is_transform=False, 
                  img_size=(224, 224), augmentations=None, instances=None):
         """__init__
-
-        :param root:
-        :param split:
-        :param is_transform:
-        :param img_size:
-        :param augmentations 
         """
         self.root = root
         self.split = split
@@ -85,13 +70,11 @@ class cnn_core50(data.Dataset):
         self.augmentations = augmentations
         self.n_classes = 50
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
-        self.mean = np.array([73.15835921, 82.90891754, 72.39239876])
         self.files = {}
-
         self.images_base = os.path.join(self.root, self.split)
-
         self.files[split] = ordered_glob(rootdir=self.images_base, split=self.split, instances=instances)
         self.instances = instances
+        self.novel_classes = [0, 1, 9, 10, 12, 19, 21, 22, 27, 30, 32, 37, 38, 42, 43, 49]
 
         if not self.files[split]:
             raise Exception("No files for split=[%s] found in %s" % (split, self.images_base))
@@ -109,9 +92,6 @@ class cnn_core50(data.Dataset):
         """
         img_path = self.files[self.split][index].rstrip()
         lbl = np.array([int(img_path[-10:-8])-1])
-        #lbl = np.array([int(img_path[-11:-9])-1]) 
-
-        #img = m.imread(img_path)
         img = Image.open(img_path)
         old_size = img.size
 
@@ -138,19 +118,13 @@ class cnn_core50(data.Dataset):
         :param img:
         :param lbl:
         """
-        #img = img[:, :, ::-1]
+      
         img = img.astype(np.float64)
-        #img -= self.mean
-        #img = m.imresize(img, (self.img_size[0], self.img_size[1]))
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img = img.astype(float) / 255.0
         # NHWC -> NCWH
         img = img.transpose(2, 0, 1)
         
         classes = np.unique(lbl)
-        #lbl = lbl.astype(float)
-
         img = torch.from_numpy(img).float()
         lbl = torch.from_numpy(lbl).long()
 
@@ -161,7 +135,7 @@ if __name__ == '__main__':
     import torchvision
     import matplotlib.pyplot as plt
 
-    local_path = '/media/mikelf/media_rob/t-less_v3/train_100p_split_views'
+    local_path = 'path_to/core50_dataset'
     dst = cnn_tless(local_path, is_transform=True, augmentations=None)
     bs = 4
     trainloader = data.DataLoader(dst, batch_size=bs, num_workers=0, shuffle=True)

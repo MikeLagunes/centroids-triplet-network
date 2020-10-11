@@ -19,15 +19,9 @@ from utils import *
 import torch.nn.functional as F
 
 
-
-
 def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
-    forbidden = [1, 2, 10, 11, 13,20, 22, 23, 28, 31, 33, 38, 39, 43, 44, 50]
-
-    print("Updating centers")
-
-    # TODO: Update batch size > 1
+    print("updating centers...")
     
     trainloader = data.DataLoader(t_loader, batch_size=1, num_workers=6, shuffle=True)
 
@@ -50,21 +44,19 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
     for i in range(n_classes):
 
-        if (i + 1) in forbidden:
+        if i in t_loader.novel:
+            
+            # push away novel labels during training
+
             exemplars_torch[i] = 10*torch.ones(1024, dtype=torch.float)
 
         else:
-        
             norm = torch.norm(exemplars_torch[i])
-        
+            
             if norm.item() != 0.:
-            # print(norm, exemplars_torch[i])
-                exemplars_torch[i] = torch.div(exemplars_torch[i],norm)
+                exemplars_torch[i] = torch.div(exemplars_torch[i],norm)        
 
-    #print(exemplars_torch)        
-        
-
-    print("OK centers")
+    print("Centers updated!")
 
     return exemplars_torch
 
@@ -128,16 +120,6 @@ def train(args):
 
         exemplars_torch = get_centroids(model, exemplars_torch, t_loader, n_classes)
             
-        # warmup
-
-        if epoch == 0:
-
-            loss_ctn = CentroidsTripletLoss(alpha_factor=0, beta_factor=0, num_classes=n_classes)
-
-        else:
-            loss_ctn = CentroidsTripletLoss(alpha_factor=args.alpha_factor, beta_factor=args.beta_factor, num_classes=n_classes)
-
-            
         for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
             images = Variable(images.cuda())
@@ -152,8 +134,6 @@ def train(args):
 
             labels_neg = labels_neg.view(len(labels_neg))
             labels_neg = Variable(labels_neg.cuda())
-
-            #print(labels_anchor)
 
             labels = torch.cat((labels_anchor, labels_pos, labels_neg), 0)
 
@@ -179,6 +159,8 @@ def train(args):
             print("Evaluating")
 
             accuracy_curr = eval_model(global_step, args.instances_to_eval )
+
+            # Keep best performing model
 
             if accuracy_curr > accuracy_best:
                 save_checkpoint(epoch, model, optimizer, "best")

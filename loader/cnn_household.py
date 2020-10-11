@@ -9,7 +9,6 @@ from PIL import Image
 import sys
 sys.path.append('.')
 import matplotlib.pyplot as plt
-#matplotlib.use('qt4agg')
 
 from collections import OrderedDict
 import os
@@ -52,8 +51,6 @@ def ordered_glob(rootdir='.', instances=''):
 
         folder_id = os.path.split(folder)[1]
 
-        #print (folder_id)
-
         for instance in instances:
 
             if folder_id.find(instance) >= 0:
@@ -68,7 +65,7 @@ def ordered_glob(rootdir='.', instances=''):
 
 class cnn_household(data.Dataset):
 
-    """ core50 loader 
+    """ household loader 
     """
    
     def __init__(self, root, split="train", is_transform=False, 
@@ -87,13 +84,11 @@ class cnn_household(data.Dataset):
         self.augmentations = augmentations
         self.n_classes = 20
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
-        self.mean = np.array([73.15835921, 82.90891754, 72.39239876])
         self.files = {}
-
         self.images_base = os.path.join(self.root, self.split)
-
         self.files[split] = ordered_glob(rootdir=self.images_base, instances=instances)
         self.instances = instances
+        self.novel_classes = [5, 12, 17, 1, 10]
 
         if not self.files[split]:
             raise Exception("No files for split=[%s] found in %s" % (split, self.images_base))
@@ -119,13 +114,7 @@ class cnn_household(data.Dataset):
         else:
             folder_id = os.path.split(os.path.split(img_path)[0])[1]
 
-        #print(folder_id)
-
-        lbl =  np.array(labels[folder_id]) #np.array([int(img_path[-10:-8])-1])
-        #print(lbl)
-        #lbl = np.array([int(img_path[-11:-9])-1]) 
-
-        #img = m.imread(img_path)
+        lbl =  np.array(labels[folder_id]) #
         img = Image.open(img_path)
         old_size = img.size
 
@@ -152,19 +141,13 @@ class cnn_household(data.Dataset):
         :param img:
         :param lbl:
         """
-        img = img[:, :, ::-1]
+       
         img = img.astype(np.float64)
-        img -= self.mean
-        img = m.imresize(img, (self.img_size[0], self.img_size[1]))
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img = img.astype(float) / 255.0
         # NHWC -> NCWH
         img = img.transpose(2, 0, 1)
-        
         classes = np.unique(lbl)
-        #lbl = lbl.astype(float)
-
+   
         img = torch.from_numpy(img).float()
         lbl = torch.from_numpy(lbl).long()
 
@@ -175,7 +158,7 @@ if __name__ == '__main__':
     import torchvision
     import matplotlib.pyplot as plt
 
-    local_path = '/media/mikelf/rob/datasets/insitu-household'
+    local_path = '/path_to/insitu-household'
 
     parser = argparse.ArgumentParser(description='Hyperparams')
     parser.add_argument('--dataset', nargs='?', type=str, default='household',
