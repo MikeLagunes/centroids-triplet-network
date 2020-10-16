@@ -51,6 +51,6 @@ class CentroidsTripletLoss(nn.Module):
             loss_triplet += triplet_distance
 
 
-        loss_total = loss_softmax + self.alpha_factor*loss_triplet  + self.beta_factor*loss_center 
+        loss_total = loss_softmax + self.alpha_factor*loss_center  + self.beta_factor*loss_triplet 
 
         return loss_total, loss_triplet, loss_softmax, loss_center 

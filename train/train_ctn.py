@@ -31,24 +31,22 @@ def get_centroids(model, exemplars_torch, t_loader, n_classes):
 
     for i, (images, images_pos, images_neg, path_img, labels_anchor, labels_pos, labels_neg) in enumerate(trainloader):
 
-        if i % 10 == 0:
+        images = Variable(images.cuda())
 
-            images = Variable(images.cuda())
+        embed_anch, _, _, _  = model(images, images, images)
+        
+        embed_anch =  embed_anch.detach().cpu()
 
-            embed_anch, _, _, _  = model(images, images, images)
-            
-            embed_anch =  embed_anch.detach().cpu()
-
-            exemplars_torch[labels_anchor.item()] += embed_anch[0]
+        exemplars_torch[labels_anchor.item()] += embed_anch[0]
 
 
     for i in range(n_classes):
 
-        if i in t_loader.novel:
+        if i in t_loader.novel_classes:
             
             # push away novel labels during training
 
-            exemplars_torch[i] = 10*torch.ones(1024, dtype=torch.float)
+            exemplars_torch[i] = 100*torch.ones(1024, dtype=torch.float)
 
         else:
             norm = torch.norm(exemplars_torch[i])
@@ -194,11 +192,11 @@ if __name__ == '__main__':
                         help='Learning Rate')
     parser.add_argument('--ckpt_path', nargs='?', type=str, default='.',
                     help='Path to save checkpoints')
-    parser.add_argument('--alpha_factor', nargs='?', type=float, default=1e-2,
+    parser.add_argument('--alpha_factor', nargs='?', type=float, default=1e-1,
                     help='alpha_factor')
     parser.add_argument('--beta_factor', nargs='?', type=float, default=1e-2,
                     help='beta_factor')
-    parser.add_argument('--wd', nargs='?', type=float, default=1e-5,
+    parser.add_argument('--wd', nargs='?', type=float, default=1e-4,
                     help='l2 regularization')
     parser.add_argument('--eval_freq', nargs='?', type=int, default=2,
                     help='Frequency for evaluating model [epochs num]')

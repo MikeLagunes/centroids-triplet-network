@@ -56,6 +56,7 @@ def recursive_glob(rootdir='.', suffix=''):
         for looproot, _, filenames in os.walk(rootdir)
         for filename in filenames if filename.endswith(suffix)]
 
+# known clases range [1, 50]
 
 known_classes = [ 3,  4,  5,  6,  7,  8,  9, 12, 14, 15, 16, 17, 18, 19, 21, 24, 25,
        26, 27, 29, 30, 32, 34, 35, 36, 37, 40, 41, 42, 45, 46, 47, 48, 49]
