@@ -3,7 +3,7 @@
 This website contains the PyTorch implemetation for the Centrois Triplet Network (CTN), as well as the links for downloaded the in-situ househol and CORe50 datasets used on the paper. 
 
 
-# Training the model
+## Training the model
 
 To train the model use:
 
@@ -11,7 +11,17 @@ To train the model use:
 python 3 train/train_ctn.py
 ```
 
-The training script finetunes a ResNet-50 backbone network, pre-trained with Imagenet, and logs the training proccess into a npz file that can be read with `logs\check_logs.py`. Datasets can be downloaded from:
+The training script finetunes a ResNet-50 backbone network, pre-trained with Imagenet, and logs the training proccess into a npz file that can be read with `logs\check_logs.py`. 
+
+## In-situ Households dataset:
+
+![In-situ Household Dataset](docs/household-dataset.jpg)
+
+
+Datasets can be downloaded from:
+
+
+
 
 [In-Situ Household](https://drive.google.com/file/d/17qKY2QTtrA17jF3jhaL2SKS1ZHuzJcbY/view?usp=sharing)
 
