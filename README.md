@@ -23,7 +23,7 @@ The script saves the weights of the best performing model.
 
 ![In-situ Household Dataset](docs/household-dataset.jpg)
 
-Our dataset, consisting of the above 20 objects and in-situ training and testing conditions, can can be downloaded from:
+Our dataset, consisting of the above 20 objects and in-situ training and testing conditions, can be downloaded from:
 
 [In-Situ Household](https://drive.google.com/file/d/17qKY2QTtrA17jF3jhaL2SKS1ZHuzJcbY/view?usp=sharing)
 
